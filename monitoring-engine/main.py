@@ -374,8 +374,6 @@ async def health():
     }
 
 
-# ── Chaos Injection Management Endpoints ─────────────────────────
-
 @app.get("/chaos/status")
 async def get_chaos_status():
     return {"enabled": _chaos_enabled}
@@ -387,3 +385,25 @@ async def toggle_chaos():
     _chaos_enabled = not _chaos_enabled
     logger.info(f"🛑 Chaos switch toggled. New state: enabled={_chaos_enabled}")
     return {"enabled": _chaos_enabled}
+
+
+@app.post("/reset")
+async def reset_monitoring_state():
+    """Clear all in-memory incidents, anomalies, buffers, and metrics counters."""
+    global _anomalies, _incidents, _latency_windows, _log_buffer
+    with _incident_lock:
+        _anomalies = []
+        _incidents = []
+        _latency_windows = {}
+        _log_buffer.clear()
+        
+        # Reset counters
+        _metrics["total_logs_ingested"] = 0
+        _metrics["total_anomalies"] = 0
+        _metrics["total_incidents"] = 0
+        _metrics["logs_per_second"] = 0.0
+        _metrics["per_service"] = {}
+        
+        logger.info("🗑️ Monitoring engine state cleared successfully")
+    return {"status": "cleared"}
+

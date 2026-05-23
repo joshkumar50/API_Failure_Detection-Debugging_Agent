@@ -171,4 +171,11 @@ export const API = {
       body: JSON.stringify(incident),
     });
   },
+
+  /** Clear all incidents, anomalies, metrics, and logs in the monitoring engine. */
+  clearAllState(): Promise<{ status: string } | null> {
+    return safeFetch<{ status: string }>('/api/monitoring/reset', {
+      method: 'POST',
+    });
+  },
 };

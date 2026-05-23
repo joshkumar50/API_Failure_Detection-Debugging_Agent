@@ -130,6 +130,41 @@ export function ChaosControl({ onToast }: ChaosControlProps) {
           )}
         </button>
       </div>
+
+      <div className="chaos-control__reset-section" style={{ marginTop: 'var(--space-sm)' }}>
+        <button
+          className="btn chaos-btn"
+          onClick={async () => {
+            if (window.confirm("Are you sure you want to clear all incidents and metrics state?")) {
+              const res = await API.clearAllState();
+              if (res && res.status === "cleared") {
+                onToast("success", "SRE state cleared successfully!");
+                // Force a page refresh to update all hooks
+                window.location.reload();
+              } else {
+                onToast("error", "Failed to clear state.");
+              }
+            }
+          }}
+          style={{
+            width: '100%',
+            background: 'rgba(255, 255, 255, 0.05)',
+            color: '#a0aec0',
+            border: '1px solid rgba(255, 255, 255, 0.1)',
+            boxShadow: 'none'
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.1)';
+            (e.currentTarget as HTMLButtonElement).style.color = '#ffffff';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLButtonElement).style.background = 'rgba(255, 255, 255, 0.05)';
+            (e.currentTarget as HTMLButtonElement).style.color = '#a0aec0';
+          }}
+        >
+          🗑️ Clear SRE Console State
+        </button>
+      </div>
     </div>
   );
 }
