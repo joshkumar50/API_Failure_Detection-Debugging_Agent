@@ -39,11 +39,12 @@ The sidebar **SERVICE HEALTH** section actively queries open unresolved incident
 * **Intelligent Scaling**: When background chaos is stopped, the traffic generator baseline dynamically throttles from **15 RPS down to a gentle 1 RPS**.
 * **Nominal Stability**: This removes organic database/CPU queuing contention on local machines, guaranteeing a flat, clean nominal system status while keeping the charts live and ready for manual chaos injection.
 
-### 4. 3-Tier Fallback AI Engine
+### 4. 4-Tier Fallback AI Engine
 A highly resilient, multi-tiered AI diagnostic model to guarantee root cause analysis is always available:
-1. **Tier 1 (Cloud)**: Google Gemini API (`gemini-2.0-flash`) for rapid, high-context cloud diagnostics.
-2. **Tier 2 (Local Fallback)**: Native Windows GPU-accelerated Ollama (`llama3.1:8b`) mapped over `host.docker.internal` (avoids heavy 4 GB container pulls).
-3. **Tier 3 (Heuristic)**: Formatted SRE rules engine that executes offline when all external networks are unavailable.
+1. **Tier 1 (Cloud - Primary)**: Google Gemini API (`gemini-2.0-flash`) for rapid, high-context cloud diagnostics.
+2. **Tier 2 (Cloud - High-Speed Fallback)**: Groq Cloud API (`llama-3.1-8b-instant`) utilizing native JSON Mode for sub-second, production-grade cloud diagnostics.
+3. **Tier 3 (Local Fallback)**: Native Windows GPU-accelerated Ollama (`llama3.1:8b`) mapped over `host.docker.internal` (avoids heavy 4 GB container pulls).
+4. **Tier 4 (Heuristic)**: Offline SRE rules engine that executes instantaneously when all external networks are unavailable.
 
 ---
 
@@ -73,6 +74,7 @@ flowchart TD
 
     subgraph AI Foundation
         GE[Gemini API]
+        GR[Groq API]
         OL[Ollama Host]
     end
 
@@ -90,7 +92,8 @@ flowchart TD
     
     ME -->|Correlate & Alert| FD
     AE -->|Query RCA| GE
-    AE -->|Query RCA Fallback| OL
+    AE -->|Query RCA Fallback 1| GR
+    AE -->|Query RCA Fallback 2| OL
 ```
 
 ---
