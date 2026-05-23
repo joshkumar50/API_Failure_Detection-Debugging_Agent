@@ -1,0 +1,86 @@
+.live-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  animation: fadeInUp 0.5s ease-out both;
+  animation-delay: 200ms;
+}
+
+@media (max-width: 1100px) {
+  .live-charts {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-container {
+  padding: var(--space-lg);
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.chart-icon {
+  font-size: 1.1rem;
+}
+
+.chart-title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.chart-unit {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 220px;
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+}
+
+/* Custom Recharts tooltip */
+.chart-tooltip {
+  padding: var(--space-sm) var(--space-md) !important;
+  border-radius: var(--radius-sm) !important;
+  font-size: var(--font-size-xs);
+  min-width: 140px;
+}
+
+.chart-tooltip__time {
+  color: var(--text-muted);
+  font-size: var(--font-size-xs);
+  margin-bottom: 4px;
+  font-family: var(--font-mono);
+}
+
+.chart-tooltip__row {
+  font-size: var(--font-size-xs);
+  margin: 2px 0;
+}
+
+.chart-tooltip__row strong {
+  font-family: var(--font-mono);
+}
+
+/* Override Recharts internals */
+.recharts-cartesian-grid-horizontal line,
+.recharts-cartesian-grid-vertical line {
+  stroke: rgba(0, 0, 0, 0.06);
+}

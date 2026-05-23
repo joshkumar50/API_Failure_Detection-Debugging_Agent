@@ -1,0 +1,42 @@
+.chaos-control {
+  animation: fadeInUp 0.5s ease-out both;
+  animation-delay: 200ms;
+}
+
+.chaos-control__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-sm);
+}
+
+.chaos-control__warning {
+  font-size: 1.1rem;
+}
+
+.chaos-control__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-red);
+}
+
+.chaos-control__description {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+  line-height: 1.5;
+}
+
+.chaos-control__buttons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.chaos-btn {
+  width: 100%;
+  padding: 12px var(--space-md);
+  font-size: var(--font-size-sm);
+}

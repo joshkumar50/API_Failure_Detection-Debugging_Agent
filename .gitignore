@@ -1,0 +1,40 @@
+# Environments & Secrets
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.*
+
+# Node.js / React build files
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+dist/
+build/
+.yarn/
+
+# Python compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Database / Local storage
+pgdata/
+.docker-data/
+
+# IDE / Editor configuration
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+.DS_Store
+Thumbs.db

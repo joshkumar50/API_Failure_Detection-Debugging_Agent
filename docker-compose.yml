@@ -1,0 +1,130 @@
+version: "3.9"
+
+networks:
+  stellar-net:
+    driver: bridge
+
+services:
+  postgres-db:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: stellar
+      POSTGRES_PASSWORD: stellar_secret
+      POSTGRES_DB: stellar_db
+    ports:
+      - "5432:5432"
+    networks:
+      - stellar-net
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stellar -d stellar_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      JWT_SECRET: "stellar-jwt-secret-key-2026"
+      SERVICE_NAME: "auth-service"
+      MONITORING_URL: "http://monitoring-engine:8005"
+    networks:
+      - stellar-net
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+
+  payment-service:
+    build:
+      context: ./payment-service
+      dockerfile: Dockerfile
+    container_name: payment-service
+    ports:
+      - "8002:8002"
+    environment:
+      JWT_SECRET: "stellar-jwt-secret-key-2026"
+      SERVICE_NAME: "payment-service"
+      DATABASE_URL: "postgresql+asyncpg://stellar:stellar_secret@postgres-db:5432/stellar_db"
+      AUTH_SERVICE_URL: "http://auth-service:8001"
+      MONITORING_URL: "http://monitoring-engine:8005"
+    networks:
+      - stellar-net
+    depends_on:
+      auth-service:
+        condition: service_started
+      postgres-db:
+        condition: service_healthy
+
+  traffic-generator:
+    build:
+      context: ./traffic-generator
+      dockerfile: Dockerfile
+    container_name: traffic-generator
+    environment:
+      AUTH_SERVICE_URL: "http://auth-service:8001"
+      PAYMENT_SERVICE_URL: "http://payment-service:8002"
+      NORMAL_RPS: "15"
+      CHAOS_INTERVAL_S: "60"
+      BURST_SIZE: "500"
+    networks:
+      - stellar-net
+    depends_on:
+      auth-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+
+  monitoring-engine:
+    build:
+      context: ./monitoring-engine
+      dockerfile: Dockerfile
+    container_name: monitoring-engine
+    ports:
+      - "8005:8005"
+    networks:
+      - stellar-net
+
+  ai-engine:
+    build:
+      context: ./ai-engine
+      dockerfile: Dockerfile
+    container_name: ai-engine
+    ports:
+      - "8006:8006"
+    environment:
+      GEMINI_API_KEY: "${GEMINI_API_KEY:-}"
+      OLLAMA_URL: "http://host.docker.internal:11434"
+      OLLAMA_MODEL: "llama3.1:8b"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - stellar-net
+
+  frontend-dashboard:
+    build:
+      context: ./frontend-dashboard
+      dockerfile: Dockerfile
+    container_name: frontend-dashboard
+    ports:
+      - "3000:3000"
+    networks:
+      - stellar-net
+    depends_on:
+      auth-service:
+        condition: service_started
+      payment-service:
+        condition: service_started
+      monitoring-engine:
+        condition: service_started
+      ai-engine:
+        condition: service_started
+
+volumes:
+  pgdata:

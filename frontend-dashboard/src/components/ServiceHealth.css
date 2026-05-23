@@ -1,0 +1,102 @@
+.service-health {
+  margin-bottom: var(--space-lg);
+}
+
+.service-health__title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-md);
+}
+
+.service-health__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.service-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-sm);
+  transition: background var(--transition-fast);
+}
+
+.service-row:hover {
+  background: var(--bg-tertiary);
+}
+
+/* Status dot */
+.service-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: all var(--transition-base);
+}
+
+.service-dot.healthy {
+  background: var(--accent-green);
+  box-shadow: 0 0 6px var(--accent-green);
+  animation: pulseGlow 2.5s ease-in-out infinite;
+  color: var(--accent-green);
+}
+
+.service-dot.degraded {
+  background: var(--accent-orange);
+  box-shadow: 0 0 6px var(--accent-orange);
+  animation: pulseGlow 2.5s ease-in-out infinite;
+  color: var(--accent-orange);
+}
+
+.service-dot.critical {
+  background: var(--accent-red);
+  box-shadow: 0 0 6px var(--accent-red);
+  animation: pulseGlow 2.0s ease-in-out infinite;
+  color: var(--accent-red);
+}
+
+.service-dot.offline {
+  background: var(--accent-red);
+  box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);
+}
+
+.service-dot.loading {
+  background: var(--text-muted);
+  animation: pulseGlow 1s ease-in-out infinite;
+  color: var(--text-muted);
+}
+
+.service-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.service-status {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.service-status.healthy {
+  color: var(--accent-green);
+}
+
+.service-status.degraded {
+  color: var(--accent-orange);
+}
+
+.service-status.critical {
+  color: var(--accent-red);
+}
+
+.service-status.offline {
+  color: var(--accent-red);
+}
