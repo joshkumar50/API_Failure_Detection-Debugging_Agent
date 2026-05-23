@@ -18,6 +18,7 @@ from pydantic import BaseModel, Field
 # Configuration
 # ---------------------------------------------------------------------------
 GEMINI_API_KEY: str = os.getenv("GEMINI_API_KEY", "")
+GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
 OLLAMA_URL: str = os.getenv("OLLAMA_URL", "http://host.docker.internal:11434")
 OLLAMA_MODEL: str = os.getenv("OLLAMA_MODEL", "llama3")
 SERVICE_NAME: str = "ai-engine"
@@ -166,7 +167,7 @@ def _analyze_with_ollama(incident: IncidentPayload) -> dict:
     response = requests.post(
         f"{OLLAMA_URL}/api/generate",
         json=payload,
-        timeout=(3.0, 5.0)  # 3s connect timeout, 5s read timeout
+        timeout=(3.0, 30.0)  # 3s connect timeout, 30s read timeout
     )
     response.raise_for_status()
     
@@ -178,6 +179,51 @@ def _analyze_with_ollama(incident: IncidentPayload) -> dict:
         lines = text.split("\n")
         text = "\n".join(lines[1:-1]) if lines[-1].strip() == "```" else "\n".join(lines[1:])
     text = text.strip()
+
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return {
+            "root_cause": "See analysis",
+            "analysis": text,
+            "fix_steps": [
+                "Step 1: Review the detailed analysis above",
+                "Step 2: Check service health and database connections",
+                "Step 3: Scale impacted services and implement circuit breakers",
+            ],
+            "severity_assessment": incident.severity,
+        }
+
+def _analyze_with_groq(incident: IncidentPayload) -> dict:
+    """Call Groq API (OpenAI compatible) for root cause analysis."""
+    import requests
+
+    prompt = _build_prompt(incident)
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "model": "llama-3.1-8b-instant",
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "response_format": {"type": "json_object"},
+        "temperature": 0.2
+    }
+
+    response = requests.post(
+        "https://api.groq.com/openai/v1/chat/completions",
+        json=payload,
+        headers=headers,
+        timeout=10.0
+    )
+    response.raise_for_status()
+    data = response.json()
+    text = data["choices"][0]["message"]["content"].strip()
 
     try:
         return json.loads(text)
@@ -286,14 +332,23 @@ async def analyze(incident: IncidentPayload):
         else:
             raise Exception("No GEMINI_API_KEY set")
     except Exception as gemini_exc:
-        logger.warning(f"⚠️ Gemini analysis failed or unavailable: {gemini_exc}. Attempting Ollama fallback...")
+        logger.warning(f"⚠️ Gemini analysis failed or unavailable: {gemini_exc}. Attempting Groq fallback...")
         try:
-            result = _analyze_with_ollama(incident)
-            model_used = OLLAMA_MODEL
-            logger.info(f"✅ Ollama analysis complete for incident {incident.id[:8]}")
-        except Exception as ollama_exc:
-            logger.error(f"❌ Ollama analysis failed: {ollama_exc}. Falling back to heuristics")
-            result = _analyze_heuristic(incident)
+            if GROQ_API_KEY:
+                result = _analyze_with_groq(incident)
+                model_used = "groq/llama-3.1-8b-instant"
+                logger.info(f"✅ Groq analysis complete for incident {incident.id[:8]}")
+            else:
+                raise Exception("No GROQ_API_KEY set")
+        except Exception as groq_exc:
+            logger.warning(f"⚠️ Groq analysis failed or unavailable: {groq_exc}. Attempting Ollama fallback...")
+            try:
+                result = _analyze_with_ollama(incident)
+                model_used = OLLAMA_MODEL
+                logger.info(f"✅ Ollama analysis complete for incident {incident.id[:8]}")
+            except Exception as ollama_exc:
+                logger.error(f"❌ Ollama analysis failed: {ollama_exc}. Falling back to heuristics")
+                result = _analyze_heuristic(incident)
 
     return RCAResponse(
         incident_id=incident.id,
