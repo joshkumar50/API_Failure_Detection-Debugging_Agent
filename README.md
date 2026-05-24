@@ -1,5 +1,10 @@
 # Stellar AI Observability Platform
 
+**Team Name:** crack_code  
+**Team Members:**
+* Josh Kumar (`chittetijoshkumar@gmail.com`)
+* Sai Sri (`saisrikondaveeti@gmail.com`)
+
 A professional-grade Site Reliability Engineering (SRE) Observability & Mathematical Anomaly Detection Platform. Stellar combines live microservice telemetry ingestion, real-time rolling statistical Z-Score profiling, and a robust 3-tier cloud/local AI diagnostic engine to identify and troubleshoot distributed system incidents instantly.
 
 ---
@@ -21,6 +26,15 @@ Operators can trigger intelligent root cause analysis on demand via an interacti
 ### 4. Incident Healing & Service Restoration
 Clicking "✓ Resolve" on the incident card (or waiting for the 15-second background nominal auto-healing loop) immediately resolves active incidents and returns service indicators back to healthy green.
 ![Stellar SRE Dashboard - State Restored](./demo-screenshots/scene4_resolved.png)
+
+### 5. Live Terminal & Container Observability
+An integrated, hacker-themed terminal UI that safely streams combined telemetry from all microservices and displays active container networking. Includes a split-tab interface to instantly switch between streaming Live Telemetry and inspecting Active Containers—all without exposing the massive security risks of mounting the Docker daemon socket.
+
+<p align="center">
+  <img src="./demo-screenshots/logs.png" width="48%" alt="Live Telemetry Logs Tab" />
+  &nbsp;
+  <img src="./demo-screenshots/active_containers.png" width="48%" alt="Active Containers Tab" />
+</p>
 
 ---
 
@@ -45,6 +59,10 @@ A highly resilient, multi-tiered AI diagnostic model to guarantee root cause ana
 2. **Tier 2 (Cloud - High-Speed Fallback)**: Groq Cloud API (`llama-3.1-8b-instant`) utilizing native JSON Mode for sub-second, production-grade cloud diagnostics.
 3. **Tier 3 (Local Fallback)**: Native Windows GPU-accelerated Ollama (`llama3.1:8b`) mapped over `host.docker.internal` (avoids heavy 4 GB container pulls).
 4. **Tier 4 (Heuristic)**: Offline SRE rules engine that executes instantaneously when all external networks are unavailable.
+
+### 5. Secure Live Terminal Polling
+* **Zero-Socket Architecture**: Avoids the critical security vulnerability of mounting `/var/run/docker.sock` to the web by polling the central `monitoring-engine` buffer for real-time logs.
+* **Smart Tab UI**: Beautiful tabbed React UI that automatically pauses auto-scrolling when inspecting historical telemetry or switching to active container statuses.
 
 ---
 

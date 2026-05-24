@@ -13,6 +13,18 @@
 
 // ── Types ──────────────────────────────────────────────────────
 
+export interface LogEntry {
+  timestamp: string;
+  service: string;
+  endpoint: string;
+  method: string;
+  status_code: number;
+  latency_ms: number;
+  level: string;
+  message: string;
+  trace_id: string;
+}
+
 export interface ServiceMetrics {
   total_requests: number;
   total_errors: number;
@@ -86,6 +98,11 @@ async function safeFetch<T>(url: string, options?: RequestInit): Promise<T | nul
 }
 
 export const API = {
+  /** Fetch recent logs from the monitoring engine for the terminal view. */
+  getLogs(limit = 200): Promise<LogEntry[] | null> {
+    return safeFetch<LogEntry[]>(`/api/monitoring/logs?limit=${limit}`);
+  },
+
   /** Fetch current system metrics from the monitoring engine. */
   getMetrics(): Promise<MetricsResponse | null> {
     return safeFetch<MetricsResponse>('/api/monitoring/metrics');

@@ -363,6 +363,12 @@ async def get_anomalies(limit: int = 100):
     return [a.model_dump() for a in reversed(_anomalies[-limit:])]
 
 
+@app.get("/logs")
+async def get_logs(limit: int = 200):
+    """Return recent ingested logs for the terminal view."""
+    return list(_log_buffer)[-limit:]
+
+
 @app.get("/health")
 async def health():
     return {

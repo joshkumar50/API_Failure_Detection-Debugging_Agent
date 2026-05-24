@@ -6,6 +6,7 @@ import { ServiceHealth } from './components/ServiceHealth';
 import { ChaosControl } from './components/ChaosControl';
 import { LiveCharts } from './components/LiveCharts';
 import { IncidentBoard } from './components/IncidentBoard';
+import { TerminalModal } from './components/TerminalModal';
 import './App.css';
 
 // ── Toast System ───────────────────────────────────────────────
@@ -23,6 +24,8 @@ function App() {
   const [autoRefresh, setAutoRefresh] = useState(true);
   const [metricsHistory, setMetricsHistory] = useState<MetricsResponse[]>([]);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [isTerminalOpen, setIsTerminalOpen] = useState(false);
+  const [terminalTab, setTerminalTab] = useState<'logs' | 'containers'>('logs');
 
   // ── Polling ──────────────────────────────────────────────────
   const getMetrics = useCallback(() => API.getMetrics(), []);
@@ -90,6 +93,35 @@ function App() {
 
           {/* Chaos Controls */}
           <ChaosControl onToast={handleToast} />
+
+          <hr className="divider" />
+
+          {/* Terminal View */}
+          <div style={{ padding: '0 var(--space-xs)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button 
+              className="btn" 
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)' }}
+              onClick={() => { setTerminalTab('logs'); setIsTerminalOpen(true); }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+              View Container Logs
+            </button>
+            <button 
+              className="btn" 
+              style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', background: 'var(--bg-primary)', color: 'var(--text-primary)', border: '1px solid var(--glass-border)' }}
+              onClick={() => { setTerminalTab('containers'); setIsTerminalOpen(true); }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+              Active Containers
+            </button>
+          </div>
 
           <hr className="divider" />
 
@@ -185,6 +217,8 @@ function App() {
           </div>
         ))}
       </div>
+
+      <TerminalModal isOpen={isTerminalOpen} onClose={() => setIsTerminalOpen(false)} initialTab={terminalTab} />
     </div>
   );
 }
