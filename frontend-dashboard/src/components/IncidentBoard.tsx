@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { API, type Incident, type RCAResponse } from '../api';
+import { IncidentTimeline } from './IncidentTimeline';
 import './IncidentBoard.css';
 
 // ── RCA Cache ──────────────────────────────────────────────────
@@ -170,6 +171,9 @@ function IncidentCard({ incident }: { incident: Incident }) {
           <div className="rca-unavailable">AI Diagnostics unavailable</div>
         )}
       </div>
+
+      {/* Incident Timeline */}
+      <IncidentTimeline incident={incident} rca={rca} />
 
       {/* Expandable Details */}
       <Expander label="🔍 Inspect Traces & Anomalies">

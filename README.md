@@ -9,6 +9,20 @@ A professional-grade Site Reliability Engineering (SRE) Observability & Mathemat
 
 ---
 
+## 🚀 Minimum Viable Product (MVP) Core Features
+1. **Real-time Distributed Telemetry Ingestion**: Seamlessly aggregates live logs across 4 different microservices.
+2. **Mathematical Anomaly Detection**: Uses rolling Z-Score profiling ($Z > 3.0$) to detect latency spikes before total failure.
+3. **On-Demand AI Root Cause Analysis**: A 4-Tier fallback AI Copilot (Gemini → Groq → Ollama → Heuristic) that translates raw anomalous logs into plain-English remediation plans.
+4. **Interactive Chaos Engineering**: Built-in "Chaos Controls" (DB Table Locks, Network Sleeps) with automated background traffic generation to easily demonstrate the platform's power without needing real human users.
+5. **Zero-Socket Secure Terminal UI**: A gorgeous, hacker-themed React terminal that safely streams container statuses and telemetry without exposing the Docker socket.
+
+## 💡 Innovation vs. Existing APM Tools
+Current observability tools (Datadog, Prometheus) rely on static, hard-coded thresholds causing massive alert fatigue, while modern "AI observability" wrappers mindlessly dump all logs into OpenAI, causing massive API bills and rate limits (the Thundering Herd problem).
+
+**Our Innovation:** Stellar combines the speed of math with the intelligence of Generative AI. We mathematically detect anomalies dynamically and locally for **$0.00**. We *only* trigger the expensive LLM to perform deep Root Cause Analysis when a human operator explicitly requests it. This hybrid approach drastically reduces cloud costs while ensuring 99.99% diagnostic uptime via our 4-Tier fallback routing engine.
+
+---
+
 ## Platform Showcase
 
 ### 1. SRE Observability Console (Nominal State)
